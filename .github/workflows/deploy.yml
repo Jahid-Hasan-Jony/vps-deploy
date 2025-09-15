@@ -31,5 +31,6 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_KEY }}
           source: "build/**"
-          target: "${{ secrets.VPS_PATH }}/build"
+          target: "${{ secrets.VPS_PATH }}/"
           debug: true
+        
