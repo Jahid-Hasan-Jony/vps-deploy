@@ -2,8 +2,8 @@ name: Deploy React App
 
 on:
   push:
-    branches:
-      - main  # or master
+    branches: [main]
+  workflow_dispatch:
 
 jobs:
   build-and-deploy:
@@ -17,11 +17,25 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: npm
+
+      # ⬇️ Build শুরুর আগেই .env তৈরি করুন
+      - name: Create .env file
+        run: |
+          echo "VITE_API_BASE=${{ secrets.VITE_API_BASE }}" > .env
+        # একাধিক ভ্যারিয়েবল হলে:
+        # run: |
+        #   cat > .env << 'EOF'
+        #   VITE_API_BASE=${{ secrets.VITE_API_BASE }}
+        #   VITE_SOME_KEY=${{ secrets.VITE_SOME_KEY }}
+        #   EOF
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Build project
+        env:
+          CI: true
         run: npm run build
 
       - name: Copy build files to VPS
@@ -33,4 +47,3 @@ jobs:
           source: "dist/**"
           target: "${{ secrets.VPS_PATH }}/"
           debug: true
-        
